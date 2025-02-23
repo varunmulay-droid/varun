@@ -1,43 +1,23 @@
-from flask import Flask, Response, request, render_template_string
+from flask import Flask, Response, render_template, request
 import torch
 from ultralytics import YOLO
 import cv2
 import numpy as np
-import os
 
 app = Flask(__name__)
 
 # Load YOLOv8 model
+model = YOLO("yolov8x.pt")
 
+# Store user-provided IP Webcam URL
+IP_WEBCAM_URL = None
 
+def generate_frames():
+    global IP_WEBCAM_URL
+    if not IP_WEBCAM_URL:
+        return
 
-# Check if the model exists; otherwise, download it
-model_path = "yolov8x.pt"
-if not os.path.exists(model_path):
-    os.system(f"wget https://github.com/ultralytics/assets/releases/download/v8.0.0/{model_path}")
-
-model = YOLO(model_path)
-
-# HTML template for inputting IP
-HTML_TEMPLATE = """
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Live YOLOv8 Detection</title>
-</head>
-<body>
-    <h2>Enter IP Webcam URL</h2>
-    <form action="/video_feed" method="get">
-        <label for="ip">IP Webcam URL:</label>
-        <input type="text" id="ip" name="ip" required>
-        <button type="submit">Start Stream</button>
-    </form>
-</body>
-</html>
-"""
-
-def generate_frames(ip_url):
-    cap = cv2.VideoCapture(ip_url)
+    cap = cv2.VideoCapture(IP_WEBCAM_URL)
 
     while True:
         success, frame = cap.read()
@@ -46,7 +26,7 @@ def generate_frames(ip_url):
 
         # Perform YOLOv8 object detection
         results = model.predict(frame)
-
+        
         for result in results:
             for box in result.boxes:
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
@@ -67,16 +47,16 @@ def generate_frames(ip_url):
 
     cap.release()
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template_string(HTML_TEMPLATE)
+    global IP_WEBCAM_URL
+    if request.method == 'POST':
+        IP_WEBCAM_URL = request.form['ip_url']
+    return render_template('index.html', ip_url=IP_WEBCAM_URL)
 
 @app.route('/video_feed')
 def video_feed():
-    ip = request.args.get('ip')
-    if not ip:
-        return "IP Webcam URL is required!", 400
-    return Response(generate_frames(ip), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
