@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live YOLOv8 Detection</title>
+</head>
+<body>
+    <h1>Enter IP Webcam URL</h1>
+    <form method="post">
+        <input type="text" name="ip_url" placeholder="http://your-ip:8080/video" required>
+        <button type="submit">Start</button>
+    </form>
+
+    {% if ip_url %}
+        <h2>Live Video Stream:</h2>
+        <img src="{{ url_for('video_feed') }}" width="640">
+    {% endif %}
+</body>
+</html>
