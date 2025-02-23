@@ -3,11 +3,20 @@ import torch
 from ultralytics import YOLO
 import cv2
 import numpy as np
+import os
 
 app = Flask(__name__)
 
 # Load YOLOv8 model
-model = YOLO("yolov8x.pt")
+
+
+
+# Check if the model exists; otherwise, download it
+model_path = "yolov8x.pt"
+if not os.path.exists(model_path):
+    os.system(f"wget https://github.com/ultralytics/assets/releases/download/v8.0.0/{model_path}")
+
+model = YOLO(model_path)
 
 # HTML template for inputting IP
 HTML_TEMPLATE = """
