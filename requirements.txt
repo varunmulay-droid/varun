@@ -1,6 +1,25 @@
-flask
-torch
-ultralytics
-opencv-python
-numpy
-requests
+# Streamlit for GUI
+streamlit
+
+# Hugging Face Libraries
+huggingface_hub
+transformers
+
+# Mistral AI API
+mistralai
+
+# PyTorch (CUDA for GPU, CPU-only version available below)
+torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118  # For GPU
+# torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu  # Uncomment for CPU
+
+# OpenAI's accelerate for efficient model execution
+accelerate
+
+# Pandas for Data Handling
+pandas
+
+# OpenPyXL for Excel File Handling
+openpyxl
+
+# ReportLab for PDF Generation
+reportlab
