@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: ai-timetable-app
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "streamlit run ai_timetable_app.py --server.port 10000 --server.address 0.0.0.0"
+    plan: free
+    region: oregon
